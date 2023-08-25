@@ -1,0 +1,43 @@
+<%- include("partials/header.ejs")%>
+
+
+    <div class="container-fluid">
+        <div class="row no-gutters">
+            <% if(loggedIn === false){ %>
+
+             <% }else { %>
+
+                <% for (let i = 0; i<motherName.length; i++){%>
+          <div class="d-flex col-12 col-lg-4 col-md-6 col-sm-12 marauto flex-column">
+            <div class="cellMother jmborder motherTag mt-3">
+                <input type="checkbox" id="myCheckbox<%= i %>" onchange="performAction(<%= i %>, '<%= encodeURIComponent(JSON.stringify(motherName[i])) %>')">
+                <i class="fa-solid fa-trash"></i> |&nbsp;
+                <span id="cellText<%= i %>">
+                <%=motherName[i].name%>
+                </span>
+            </div>
+            <div class="cell p-2" id="staticNotes<%=i%>">
+                <%=motherName[i].notes %>
+            </div>
+                <div class="cell p-2 hide" id="textareaMNotes<%=i%>">
+                    <textarea name="updateMNotes<%=i%>" id="updateMNotes<%=i%>" cols="30" rows="10"><%=motherName[i].notes %></textarea>
+                </div>
+
+                <div class="d-flex flex-row-reverse flex-column">
+                    <div class="cell mb-3">
+                        <button  class="btn btn-light" id="showHide<%= i %>" onclick="showHideFunc(<%=i%>);changeText(<%=i%>);">Update</button>
+                    </div>
+                    <div class="cell mb-3">
+                        <button class="btn btn-light hide" id="updateConfirm<%= i %>" onclick="updateFunc(<%=i%>,'<%= encodeURIComponent(JSON.stringify(motherName[i])) %>')">Confirm</button>
+                    </div>
+                </div>
+
+          </div>
+          <%}%>
+            <%}%>
+        </div>
+
+    </div>
+
+
+<%- include("partials/footer.ejs")%>
