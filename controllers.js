@@ -6,9 +6,12 @@ import { connURL } from './index.js';
 import md5 from 'md5';
 import {generateUniqueId, insertDoc, updateDoc, deleteDoc} from './index.js'
 const __dirname = dirname(fileURLToPath(import.meta.url));
-export let loggedIn = false;
 import { generateUniqueToken } from "./index.js";
+import nodemailer from 'nodemailer';
+import msal from 'msal';
 
+export const regiFailed = false;
+export let loggedIn = false;
 
 export async function logout(req, res) {
     try {
@@ -30,9 +33,10 @@ export async function login(req, res){
     const { userLog, passLog } = req.body;
 
     try {
+      const email = await UserModel.findOne({ email: userLog });
       const user = await UserModel.findOne({ username: userLog });
       console.log(user);
-      if (user && user.password === md5(passLog)) {
+      if (user && user.password === md5(passLog) || email && user.password === md5(passLog)) {
         
         const read = await MotherModel.find({});
         req.session.userId = user._id;
@@ -43,7 +47,7 @@ export async function login(req, res){
       } else {
         // Login failed
         
-        res.render(__dirname + '/views/index.ejs', { loggedIn: false });
+        res.render(__dirname + '/views/index.ejs', { loggedIn: false, regiFailed:false });
       }
     } catch (error) {
       console.error('Error:', error);
@@ -64,11 +68,45 @@ export async function submit(req, res) {
     res.redirect('/:userID');
     }
 }
-  
+const azureConfig = {
+    auth: {
+        clientId: 'e8f2710f-cd73-44c3-99ec-142ec8d327dc',
+        authority: 'https://login.microsoftonline.com/cf6a4f01-dfbf-48ee-b1e2-64e9431ed496',
+        clientSecret: 'tTF8Q~XAXkVKDZ~qQtmq8EYHIZC1hQtLIDZRBafT'
+    }
+};
+
+// Create a MSAL application
+const msalApp = new msal.ConfidentialClientApplication(azureConfig);
+
+// Request token using MSAL
+async function getToken() {
+    const tokenRequest = {
+        scopes: ['https://outlook.office365.com/.default'] // This scope is for sending emails through Outlook/Microsoft 365
+    };
+
+    try {
+        const tokenResponse = await msalApp.acquireTokenByClientCredential(tokenRequest);
+        return tokenResponse.accessToken;
+    } catch (error) {
+        console.error('Error acquiring token:', error);
+        return null;
+    }
+}
+
+// Create a Nodemailer transporter with OAuth2
+const transporter = nodemailer.createTransport({
+    service: 'outlook', // You can set 'office365' or other appropriate service name
+    auth: {
+        type: 'OAuth2',
+        user: 'admin@doulafocus.com', // Your email address
+        accessToken: getToken()
+    }
+});
 export async function register(req, res) {
     try {
         const { email, username, password, passwordVer } = req.body;
-        
+
         const userId = await generateUniqueId('users');
         const md5Pass = md5(password);
         const md5PassVer = md5(passwordVer);
@@ -80,7 +118,8 @@ export async function register(req, res) {
                 {
                     _id: `user_${userId}`,
                     email,
-                    username, 
+                    username,
+                    isVerified: false, 
                     verificationToken,
                     password: md5Pass
                 });
@@ -88,7 +127,7 @@ export async function register(req, res) {
             await newUser.save();
             const verificationLink = `http://localhost:3000/verify/${verificationToken}`;
             const mailOptions = {
-                from: 'your-email@example.com',
+                from: 'admin@doulafocus.com',
                 to: email,
                 subject: 'Email Verification',
                 text: `Please click on the following link to verify your email: ${verificationLink}`
@@ -102,12 +141,12 @@ export async function register(req, res) {
                 }
             });
     
-            res.render(__dirname + '/views/regSuc.ejs');
+            res.render(__dirname + '/views/regSuc.ejs', {loggedIn:false, regiFailed:false});
         }
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Failed to register user.' });
+        res.render(__dirname + '/views/regFail.ejs', {loggedIn:false, regiFailed: true});
     }
 }
 export async function updateList(req, res) {
@@ -145,7 +184,7 @@ export async function updateNotes(req, res) {
 export async function getIndexPage(req, res) {
     if (!req.session.loginTimestamp || Date.now() - req.session.loginTimestamp > 24 * 60 * 60 * 1000) {
       // User is not logged in
-      res.render(__dirname + '/views/index.ejs', { loggedIn: false });
+      res.render(__dirname + '/views/index.ejs', { loggedIn: false, regiFailed:false });
     } else {
       // User is logged in
       const userId = req.session.userId;
@@ -163,9 +202,32 @@ export async function getIndexPage(req, res) {
   
     // Check if the logged-in user's ID matches the requested userID
     if (userId === req.params.userID) {
-      res.render(__dirname + '/views/index.ejs', { motherName: read, loggedIn: true });
+      res.render(__dirname + '/views/index.ejs', { motherName: read, loggedIn: true, regiFailed:false });
     } else {
       // Redirect to a different URL for unauthorized access
       res.redirect(`/${userId}`);
     }
+  }
+
+  export async function verify(req, res){
+    const verificationToken = req.params.token;
+
+    try {
+        // Find the user by verification token
+        const user = await User.findOne({ verificationToken });
+
+        if (!user) {
+            res.render(__dirname + '/views/invalidToken.ejs');
+        }
+
+        // Update user's verification status
+        user.isVerified = true;
+        user.verificationToken = undefined; // Clear the token
+        await user.save();
+
+        res.render(__dirname + '/views/index.ejs', {loggedIn:false, regiFailed:false});
+    } catch (error) {
+        res.render(__dirname+ '/views/verFail.ejs', {error:error, loggedIn:false, regiFailed:false});
+    }
+
   }

@@ -3,10 +3,10 @@ import md5 from 'md5';
 
 const userSchema = new mongoose.Schema({
     _id: String,
-    email: {type: String, required: true },
+    email: {type: String, unique: true, required: true },
     isVerified: {type: String, required: true},
     verificationToken: {type: String },
-    username: { type: String, required: true },
+    username: { type: String, unique: false, required: true },
     password: { type: String, required: true },
 });
   

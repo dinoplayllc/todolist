@@ -7,6 +7,11 @@ const showLogin = document.getElementById("showLogin");
 const showLoginLoggedOut = document.getElementById("showLogin-loggedInFalse");
 const mainLogin = document.querySelector(".form-login-loggedOut");
 const overlay = document.getElementById("overlay");
+const invToken = document.getElementById("invToken");
+const regFail = document.getElementById("regFail");
+const regSuc = document.getElementById("regSuc");
+const verFail = document.getElementById("verFail");
+const verSuc = document.getElementById("verSuc");
 
 const textboxFocus = document.getElementById("textboxFocus");
 textboxFocus.focus();
@@ -54,6 +59,18 @@ function hide(){
     if(mainLogin.style.display === "block"){
         toggleFormAndOverlay(mainLogin);
     }
+
+    toggleFormAndOverlay(formRegister);
+    overlay.style.display = "none";
+    showLoginLoggedOut.classList.remove('hide');
+    showRegisterLoggedOut.classList.add('show-form');
+}
+function hideForm(){
+    regFail.classList.add('hide');
+    if(regFail.style.display === "block"){
+        toggleFormAndOverlay(regFail);
+    }
+    
     toggleFormAndOverlay(formRegister);
     overlay.style.display = "none";
     showLoginLoggedOut.classList.remove('hide');
@@ -187,3 +204,12 @@ function validateInput(inputElement) {
         inputElement.value = inputValue.replace(/[^a-zA-Z0-9]/g, '');
     }
 }
+        function validateEmail(emailElement) {
+            var emailValue = emailElement.value;
+            var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (!emailPattern.test(emailValue)) {
+                alert("Please enter a valid email address.");
+                emailElement.value = "";
+            }
+        }
