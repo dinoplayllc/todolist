@@ -214,7 +214,8 @@ export async function getIndexPage(req, res) {
         user.verificationToken = undefined; // Clear the token
         await user.save();
 
-        res.render(__dirname + '/views/index.ejs', {loggedIn:false, regiFailed:false,  regiSuc:false});
+        res.redirect('/');
+        //res.render(__dirname + '/views/index.ejs', {loggedIn:false, regiFailed:false,  regiSuc:false});
     } catch (error) {
         res.render(__dirname+ '/views/status/verFail.ejs', {error:error, loggedIn:false, regiFailed:false,  regiSuc:false});
     }
