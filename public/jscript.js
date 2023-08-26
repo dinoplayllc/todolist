@@ -12,6 +12,7 @@ const regFail = document.getElementById("regFail");
 const regSuc = document.getElementById("regSuc");
 const verFail = document.getElementById("verFail");
 const verSuc = document.getElementById("verSuc");
+const statusLay = document.querySelector(".form-registerSuccess");
 
 const textboxFocus = document.getElementById("textboxFocus");
 textboxFocus.focus();
@@ -27,7 +28,7 @@ function toggleFormAndOverlay(formElement) {
     } else {
         formElement.classList.add("show-form");
         formElement.style.display = "block";
-        overlay.style.display = "block";
+        overlay.style.display = "none";
     }
 }
 
@@ -40,6 +41,17 @@ function hideBothForms() {
     mainLogin.style.display = "none";
     overlay.style.display = "none";
 }
+function showForm(){
+        
+        if (formContainer.style.display === "block"){
+            toggleFormAndOverlay(formContainer);
+            formContainer.style.display = "none";
+        } else {
+            toggleFormAndOverlay(formContainer);
+            formContainer.style.display = "block"
+        }
+    
+}
 function unhide() {
     if(formRegister.style.display === "block"){
         
@@ -47,13 +59,17 @@ function unhide() {
     formRegister.classList.add('hide');
     }
     
-    if (mainLogin) {
-        mainLogin.classList.remove('hide');
-        mainLogin.style.display = "block";
+    if (mainLogin.style.display === "block"){
+        mainLogin.classList.add('hide');
+        toggleFormAndOverlay(mainLogin);
     } else {
-        console.error("mainLogin is null or undefined");
+        mainLogin.classList.remove('hide'); 
+        toggleFormAndOverlay(mainLogin);
     }
+    statusLay.classList.add('hide');
+
 }
+
 function hide(){
     mainLogin.classList.add('hide');
     if(mainLogin.style.display === "block"){
@@ -62,16 +78,26 @@ function hide(){
 
     toggleFormAndOverlay(formRegister);
     overlay.style.display = "none";
-    showLoginLoggedOut.classList.remove('hide');
+    if(showLoginLoggedOut.style.display === "none"){
+        showLoginLoggedOut.classList.remove('hide');
+    }
     showRegisterLoggedOut.classList.add('show-form');
+    statusLay.classList.add('hide');
 }
 function hideForm(){
+    mainLogin.classList.add('hide');
+    if(mainLogin.style.display === "block"){
+        toggleFormAndOverlay(mainLogin);
+    } else {
+        toggleFormAndOverlay(mainLogin);
+    }
+
+    toggleFormAndOverlay(formRegister);
     regFail.classList.add('hide');
     if(regFail.style.display === "block"){
         toggleFormAndOverlay(regFail);
     }
     
-    toggleFormAndOverlay(formRegister);
     overlay.style.display = "none";
     showLoginLoggedOut.classList.remove('hide');
     showRegisterLoggedOut.classList.add('show-form');
@@ -99,11 +125,11 @@ showRegisterLoggedOut.addEventListener("click", () => {
 });
 
 
-showFormBtn.addEventListener("click", () => {
-    toggleFormAndOverlay(formContainer);
-    formRegister.classList.remove("show-form");
-    formRegister.style.display = "none";
-});
+// showFormBtn.addEventListener("click", () => {
+//     toggleFormAndOverlay(formContainer);
+//     formRegister.classList.remove("show-form");
+//     formRegister.style.display = "none";
+// });
 
 overlay.addEventListener("click", () => {
     hideBothForms();

@@ -84,7 +84,7 @@ export async function insertDoc(userId, motherName, note) {
         notes: note
     });
 
-    await insdertDoc.save(); // Wait for the document to be saved before rendering
+    await insertDoc.save(); // Wait for the document to be saved before rendering
 }
 
 export function generateUniqueToken() {
