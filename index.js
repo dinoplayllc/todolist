@@ -9,7 +9,7 @@ import {MongoClient} from 'mongodb';
 import session from 'express-session';
 import {UserModel, MotherModel, UniqueIdModel} from './models.js';
 
-const port = 3000;
+const port = 8000;
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static("public"));
