@@ -5,7 +5,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "nyc mocha --recursive",
     "start": "node index"
   },
   "keywords": [],
