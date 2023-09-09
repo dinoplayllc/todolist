@@ -68,11 +68,11 @@ export async function submit(req, res) {
     let motherName = req.body.motherName;
     const userId = req.session.userId;
 
-    await insertDoc(userId, motherName, item); // Save the new document to the database
-    if(loggedIn === false){
+   if(loggedIn === false){
         res.redirect('/');
     }else {
         
+    await insertDoc(userId, motherName, item); // Save the new document to the database
     res.redirect('/:userID');
     }
 }
@@ -147,18 +147,17 @@ export async function updateList(req, res) {
 
     console.log("Mother's name:", name); // Debugging statement
 
-    await deleteDoc(name);
     if(loggedIn === false){
         res.redirect('/');
     }else {
-        
+    
+    await deleteDoc(name);
     res.redirect('/:userID');
     }
 }
   
 export async function updateNotes(req, res) {
     const motherID = req.body.motherName._id;
-    await updateDoc(motherID, req.body.updateNote);
   
     const userId = req.session.userId; // Get the userId from the session
     console.log("userId:", userId); // Debugging statement
@@ -166,6 +165,7 @@ export async function updateNotes(req, res) {
     if (!loggedIn) { // Note the change here, using "!" to negate the "loggedIn" variable
       res.redirect('/');
     } else {
+      await updateDoc(motherID, req.body.updateNote);
       res.redirect(`/${userId}`);
     }
 }
@@ -173,7 +173,7 @@ export async function updateNotes(req, res) {
 export async function getIndexPage(req, res) {
     if (!req.session.loginTimestamp || Date.now() - req.session.loginTimestamp > 24 * 60 * 60 * 1000) {
       // User is not logged in
-      res.render(__dirname + '/views/index.ejs', { loggedIn: false, regiFailed:false, regiSuc:false });
+      res.render(__dirname + '/views/home.ejs', { loggedIn: false, regiFailed:false, regiSuc:false });
     } else {
       // User is logged in
       const userId = req.session.userId;
@@ -192,9 +192,10 @@ export async function getIndexPage(req, res) {
     // Check if the logged-in user's ID matches the requested userID
     if (userId === req.params.userID) {
       res.render(__dirname + '/views/index.ejs', { motherName: read, loggedIn: true, regiFailed:false,  regiSuc:false });
+      //res.redirect(`/${userId}`);
     } else {
       // Redirect to a different URL for unauthorized access
-      res.redirect(`/${userId}`);
+      res.redirect(`/`);
     }
   }
 
@@ -221,3 +222,9 @@ export async function getIndexPage(req, res) {
     }
 
   }
+
+  export async function home(req, res) {
+
+        res.render(__dirname + '/views/home.ejs', { loggedIn: loggedIn, regiFailed: false, regiSuc: false });
+
+}

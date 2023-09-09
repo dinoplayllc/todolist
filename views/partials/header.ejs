@@ -20,11 +20,15 @@
         <span class="navbar-brand mb-0">Focus</span>
         <div>
           <% if (loggedIn === false) {%>
+            <a class="mx-2 anchor" href="#Home">Home</a>
+            <a class="mx-2 anchor" href="#Donate">Donate</a>
             <button class="btn btn-outline-success me-2 hide" id="showFormBtn" type="button">Add New</button>
             <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navtog-color custom-toggler navbar-toggler-icon"></span>
             </button>
-           <% } else {%>
+            <% } else {%>
+              <a class="mx-2 anchor" href="#Home">Home</a>
+              <a class="mx-2 anchor" href="#Donate">Donate</a>
             <button class="btn btn-outline-success me-2" onclick="showForm();" id="showFormBtn" type="button">Add New</button>
             <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navtog-color custom-toggler navbar-toggler-icon"></span>
@@ -90,7 +94,7 @@
     <% if (regiSuc === false) {%>
       <% if (regiFailed === false){ %>
         <% if (loggedIn === false ) {%>
-          <div class="form-login-loggedOut">
+          <div class="form-login-loggedOut hide">
             <h1>Login</h1>
             <form action="/login" method="POST">
               <input id="textboxFocus" type="text" class="text" name="userLog" placeholder="email">

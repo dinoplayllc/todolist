@@ -14,6 +14,7 @@ const verFail = document.getElementById("verFail");
 const verSuc = document.getElementById("verSuc");
 const statusLay = document.querySelector(".form-registerSuccess");
 
+
 const textboxFocus = document.getElementById("textboxFocus");
 textboxFocus.focus();
 const regiFocus = document.getElementById("regiFocus");
@@ -85,22 +86,29 @@ function hide(){
     statusLay.classList.add('hide');
 }
 function hideForm(){
-    mainLogin.classList.add('hide');
     if(mainLogin.style.display === "block"){
+        
         toggleFormAndOverlay(mainLogin);
-    } else {
-        toggleFormAndOverlay(mainLogin);
-    }
-
-    toggleFormAndOverlay(formRegister);
-    regFail.classList.add('hide');
-    if(regFail.style.display === "block"){
-        toggleFormAndOverlay(regFail);
-    }
+        mainLogin.classList.add('hide');
+        }
+        
+        if (formRegister.style.display === "block"){
+            formRegister.classList.add('hide');
+            toggleFormAndOverlay(formRegister);
+        } else {
+            formRegister.classList.remove('hide'); 
+            toggleFormAndOverlay(formRegister);
+            formRegister.style.display = "block";
+        }
+        statusLay.classList.add('hide');
+    // regFail.classList.add('hide');
+    // if(regFail.style.display === "block"){
+    //     toggleFormAndOverlay(regFail);
+    // }
     
     overlay.style.display = "none";
-    showLoginLoggedOut.classList.remove('hide');
-    showRegisterLoggedOut.classList.add('show-form');
+    //showLoginLoggedOut.classList.remove('hide');
+    //showRegisterLoggedOut.classList.add('show-form');
 }
 showLogin.addEventListener("click", () => {
     toggleFormAndOverlay(mainLogin);
@@ -184,6 +192,35 @@ function showHideFunc(i) {
         $("#updateConfirm" + i).removeClass("hide");
     }
   }
+
+function showPDF(index) {
+    const pdfID = document.getElementById("pdfID"+index);
+    const staNotes = document.getElementById("staticNotes" + index);
+    const buttonChange = document.getElementById("showHide"+index);
+    const uploadButton = document.getElementById("upload"+index);
+
+    if(pdfID.style.display === "block"){
+        pdfID.style.display = "none";
+        pdfID.classList.add('hide');
+        staNotes.style.display = "block";
+        staNotes.classList.remove('hide');
+        buttonChange.style.display = "block";
+        buttonChange.classList.remove('hide');
+        uploadButton.style.display = "none";
+        uploadButton.classList.add('hide');
+    } else{
+        pdfID.style.display = "block";
+        pdfID.classList.remove('hide');
+        staNotes.style.display = "none";
+        staNotes.classList.add('hide');
+        buttonChange.style.display = "none";
+        buttonChange.classList.add('hide');
+        uploadButton.style.display = "block";
+        uploadButton.classList.remove('hide');
+    }
+    
+    
+}
 function changeText(i){
     const display = $("#staticNotes" + i).css("display");
 
@@ -219,23 +256,5 @@ function updateFunc(index, motherName) {
         }
     })
     .catch(error => console.error('Error:', error));
-};
-
-function validateInput(inputElement) {
-    var inputValue = inputElement.value;
-    var allowedCharacters = /^[a-zA-Z0-9]*$/;
-
-    if (!allowedCharacters.test(inputValue)) {
-        alert("Special characters are not allowed.");
-        inputElement.value = inputValue.replace(/[^a-zA-Z0-9]/g, '');
-    }
 }
-        function validateEmail(emailElement) {
-            var emailValue = emailElement.value;
-            var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-            if (!emailPattern.test(emailValue)) {
-                alert("Please enter a valid email address.");
-                emailElement.value = "";
-            }
-        }
