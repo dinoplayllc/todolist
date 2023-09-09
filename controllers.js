@@ -8,6 +8,7 @@ import {generateUniqueId, insertDoc, updateDoc, deleteDoc} from './index.js'
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import { generateUniqueToken } from "./index.js";
 import nodemailer from 'nodemailer';
+import sanitize from 'mongo-sanitize';
 
 export const regiFailed = false;
 export const regiSuc = false;

@@ -8,6 +8,8 @@ import md5 from 'md5';
 import {MongoClient} from 'mongodb';
 import session from 'express-session';
 import {UserModel, MotherModel, UniqueIdModel} from './models.js';
+import filter from 'content-filter';
+import sanitize from 'mongo-sanitize';
 
 const port = 8080;
 const app = express();
@@ -17,6 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); // Add this line to parse JSON data
 export const connURL = "mongodb+srv://admin-hector:test123@freetest1.8lywiq7.mongodb.net/?retryWrites=true&w=majority"
 import routes from './routes.js';
+app.use(filter());
+
 mongoose.connect(connURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true});
@@ -43,26 +47,30 @@ app.use(
 
   // Function to generate a new unique ID for a specific collection
 export  async function generateUniqueId(collectionName) {
-    const query = { collectionName: collectionName };
+    var S_collectionName = sanitize(collectionName);
+    const query = { collectionName: S_collectionName };
     const update = { $inc: { lastId: 1 } };
     const options = { upsert: true, new: true };
     const result = await UniqueIdModel.findOneAndUpdate(query, update, options);
     return result.lastId;
   }
 
-export async function deleteDoc(motherName, note){
+export async function deleteDoc(motherName){
+    var S_motherName = sanitize(motherName);
     try{
         await mongoose.connect(`${connURL}`);
-        await MotherModel.findOneAndDelete({ name: motherName });
+        await MotherModel.findOneAndDelete({ name: S_motherName });
     }catch(error){
         console.log(error)
     }
 }
 export async function updateDoc(motherID, updatedNote) {
+    var S_motherID = sanitize(motherID);
+    var S_updatedNote = sanitize(updatedNote);
     try {
         await mongoose.connect(`${connURL}`);
-        const filter = { _id: motherID };
-        const update = { $set: { notes: [updatedNote] } };
+        const filter = { _id: S_motherID };
+        const update = { $set: { notes: [S_updatedNote] } };
 
         const result = await MotherModel.findOneAndUpdate(filter, update);
 
@@ -77,11 +85,15 @@ export async function updateDoc(motherID, updatedNote) {
 };
 
 export async function insertDoc(userId, motherName, note) {
+    var S_userId = sanitize(userId);
+    var S_motherName = sanitize(motherName);
+    var S_note = sanitize(note);
+
     await mongoose.connect(`${connURL}`);
     const insertDoc = new MotherModel({
-        mom_id: `user_${userId}`,
-        name: motherName,
-        notes: note
+        mom_id: `user_${S_userId}`,
+        name: S_motherName,
+        notes: S_note
     });
 
     await insertDoc.save(); // Wait for the document to be saved before rendering
