@@ -32,22 +32,21 @@ export async function logout(req, res) {
 export async function login(req, res){
     await mongoose.connect(`${connURL}`);
     const { userLog, passLog } = req.body;
+    var S_userLog = sanitize(userLog);
 
     try {
-      const email = await UserModel.findOne({ email: userLog });
-      const user = await UserModel.findOne({ username: userLog });
+      const email = await UserModel.findOne({ email: S_userLog });
+      const user = await UserModel.findOne({ username: S_userLog });
       console.log(user);
       console.log(email);
       if (userLog && user && (user.password === md5(passLog))) {
    
-        const read = await MotherModel.find({});
         req.session.userId = user._id;
         req.session.loginTimestamp = Date.now();
         loggedIn = true;
         console.log(user._id);
         res.redirect('/:userID');
       } else if (userLog && email && (email.password === md5(passLog))) {
-        const read = await MotherModel.find({});
         req.session.userId = email._id;
         req.session.loginTimestamp = Date.now();
         loggedIn = true;
